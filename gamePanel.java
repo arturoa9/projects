@@ -10,7 +10,10 @@ import javax.swing.JPanel;
 
 public class gamePanel extends JPanel implements ActionListener{
 	
-	static final int SCREEN_WIDTH = 500; //
+	/*
+	 * Declare class variables
+	 */
+	static final int SCREEN_WIDTH = 500; 
 	static final int SCREEN_HEIGHT = 500;
 	static final int UNIT_SIZE = 25;
 	static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
@@ -31,20 +34,20 @@ public class gamePanel extends JPanel implements ActionListener{
 	gamePanel()
 	{
 		random  = new Random();
-		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
-		this.setBackground(Color.black);
-		this.setFocusable(true);
-		this.addKeyListener(new myKeyAdapter());
-		startGame();
+		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));//set game square size
+		this.setBackground(Color.black);//set background color
+		this.setFocusable(true);//set focusable for user input
+		this.addKeyListener(new myKeyAdapter());//initiate key listener
+		startGame();//start game
 		
 	}
 	
 	public void startGame() 
 	{
-		newFruit();
-		running = true;
-		timer = new Timer(DELAY,this);
-		timer.start();
+		newFruit();//method to create a new fruit
+		running = true;//change game status to running
+		timer = new Timer(DELAY,this);//initiate a new timer
+		timer.start();//start a new timer
 	}
 	
 	public void paintComponent(Graphics g) 
@@ -56,29 +59,33 @@ public class gamePanel extends JPanel implements ActionListener{
 	public void draw(Graphics g) 
 	{
 
-		if(running) {
-			g.setColor(Color.magenta);
-			g.fillOval(fruitX, fruitY, UNIT_SIZE, UNIT_SIZE);
+		if(running)//confirm that the game is running
+		{
+			g.setColor(Color.magenta);//set color for fruit
+			g.fillOval(fruitX, fruitY, UNIT_SIZE, UNIT_SIZE);//set random fruit location
 			
-			for(int i = 0; i < bodyParts; i++) 
+			for(int i = 0; i < bodyParts; i++)//iterate through the body parts of the snake 
 			{
 				if( i == 0) 
 				{
-					g.setColor(Color.green);
+					g.setColor(Color.green);//color the head of the snake
 					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 				}
 				else
 				{
-					g.setColor(Color.cyan);
+					g.setColor(new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255)));//color the body of the snake
 					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 				}
 			}
 		}
+		else
+			gameOver(g);//game over method
 	}
+
 	
-	public void move () 
+	public void move ()//listens to user input to move the snake
 	{
-		for (int i = bodyParts;i > 0; i--) 
+		for (int i = bodyParts;i > 0; i--)//iterates through the snake body shifting the coordinates of the array 
 		{
 			x[i] = x[i-1];
 			y[i] = y[i-1];			
@@ -86,7 +93,7 @@ public class gamePanel extends JPanel implements ActionListener{
 
 
 		
-		switch(direction)
+		switch(direction)//switch with cases to handel user input for the snake movement
 		{
 		case'U':
 			y[0] = y[0] - UNIT_SIZE;
@@ -102,16 +109,17 @@ public class gamePanel extends JPanel implements ActionListener{
 			break;	
 		}
 	}
-	public void newFruit() 
+	public void newFruit() //initiate a new fruit in the game panel
 	{
 		fruitX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
 		fruitY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
 
 	}
 	
-	public void checkFruit() 
+	public void checkFruit() //checks if the head of the snake has eaten a fruit
 	{
-		if((x[0] == fruitX) && (y[0] == fruitY)) {
+		if((x[0] == fruitX) && (y[0] == fruitY)) //if the head of the snake eats a fruit add body parts and fruits eaten
+		{
 			bodyParts++;
 			fruitsEaten++;
 			newFruit();
@@ -129,37 +137,43 @@ public class gamePanel extends JPanel implements ActionListener{
 			}
 		}
 		//check if head touches left border
-		if(x[0] < 0) {
+		if(x[0] < 0) 
+		{
 			running = false;
 		}
 		//check if head touches right border
-		if(x[0] > SCREEN_WIDTH) {
+		if(x[0] > SCREEN_WIDTH) 
+		{
 			running = false;
 		}
 		//check if head touches top border
-		if(y[0] < 0) {
+		if(y[0] < 0) 
+		{
 			running = false;
 		}
 		//check if head touches bottom border
-		if(y[0] > SCREEN_HEIGHT) {
+		if(y[0] > SCREEN_HEIGHT) 
+		{
 			running = false;
 		}
 		
-		if(!running) {
+		if(!running) 
+		{
 			timer.stop();
 		}
 
 	}
 
-	public void gameOver(Graphics g) 
+	public void gameOver(Graphics g)//creates game over message on the screen 
 	{
-		
+		g.setColor(Color.red);
+		g.setFont(new Font("times new roman",Font.BOLD,65));
+		g.drawString("Game Over", (SCREEN_WIDTH/6), (SCREEN_HEIGHT/2));
 		
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
-
 		if(running) 
 		{
 			move();
@@ -170,7 +184,7 @@ public class gamePanel extends JPanel implements ActionListener{
 		repaint();
 	}
 	
-	public class myKeyAdapter extends KeyAdapter
+	public class myKeyAdapter extends KeyAdapter//listens to user input for the direction of the snake
 	{
 		@Override
 		public void keyPressed(KeyEvent e) 
